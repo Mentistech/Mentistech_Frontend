@@ -1,23 +1,29 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
+import CheckinPage from './pages/CheckinPage/CheckinPage';
+import AnalysisPage from './pages/AnalysisPage/AnalysisPage';
 import './App.css';
 
 function App() {
+  const [currentPage, setCurrentPage] = useState('checkin');
+  const [checkinData, setCheckinData] = useState(null);
+
+  const handleCheckinSubmit = (data) => {
+    setCheckinData(data);
+    setCurrentPage('analysis');
+  };
+
+  const handleBack = () => {
+    setCurrentPage('checkin');
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {currentPage === 'checkin' && (
+        <CheckinPage onSubmit={handleCheckinSubmit} />
+      )}
+      {currentPage === 'analysis' && (
+        <AnalysisPage data={checkinData} onBack={handleBack} />
+      )}
     </div>
   );
 }
