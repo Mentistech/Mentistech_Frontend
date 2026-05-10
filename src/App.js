@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import CheckinPage from './pages/CheckinPage/CheckinPage';
 import AnalysisPage from './pages/AnalysisPage/AnalysisPage';
+import SchedulePage from './pages/SchedulePage/SchedulePage';
 import './App.css';
 
 function App() {
@@ -16,13 +17,24 @@ function App() {
     setCurrentPage('checkin');
   };
 
+  const handleSchedule = () => {
+    setCurrentPage('schedule');
+  };
+
+  const handleBackToAnalysis = () => {
+    setCurrentPage('analysis');
+  };
+
   return (
     <div className="App">
       {currentPage === 'checkin' && (
         <CheckinPage onSubmit={handleCheckinSubmit} />
       )}
       {currentPage === 'analysis' && (
-        <AnalysisPage data={checkinData} onBack={handleBack} />
+        <AnalysisPage data={checkinData} onBack={handleBack} onSchedule={handleSchedule} />
+      )}
+      {currentPage === 'schedule' && (
+        <SchedulePage onBack={handleBackToAnalysis} />
       )}
     </div>
   );
