@@ -2,7 +2,7 @@ import React from 'react';
 import Header from '../../components/Header/Header';
 import './AnalysisPage.css';
 
-function AnalysisPage({ data, onBack, onSchedule }) {
+function AnalysisPage({ data, onBack, onSchedule, onNavigate }) {
   const analysisText = `
     Com base no seu check-in de hoje, percebo que você está se sentindo em um nível moderado de bem-estar. 
     O seu nível de estresse atual de ${data?.stressLevel || 50}% indica que você pode estar enfrentando 
@@ -17,7 +17,7 @@ function AnalysisPage({ data, onBack, onSchedule }) {
 
   return (
     <div className="analysis-page">
-      <Header />
+      <Header currentPage="checkin" onNavigate={onNavigate} />
       
       <main className="analysis-content">
         <div className="analysis-card">

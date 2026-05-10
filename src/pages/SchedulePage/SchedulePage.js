@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Header from '../../components/Header/Header';
 import './SchedulePage.css';
 
-function SchedulePage({ onBack }) {
+function SchedulePage({ onBack, onNavigate }) {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState('');
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -82,10 +82,9 @@ function SchedulePage({ onBack }) {
 
   return (
     <div className="schedule-page">
-      <Header />
+      <Header currentPage="checkin" onNavigate={onNavigate} />
       
       <main className="schedule-content">
-        <h1 className="greeting">Olá, João!</h1>
 
         <div className="schedule-container">
           <div className="calendar">
