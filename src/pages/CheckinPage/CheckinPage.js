@@ -10,7 +10,7 @@ const moods = [
   { value: 5, emoji: '😄', label: 'Muito bem' },
 ];
 
-function CheckinPage({ onSubmit }) {
+function CheckinPage({ onSubmit, onNavigate }) {
   const [selectedMood, setSelectedMood] = useState(null);
   const [stressLevel, setStressLevel] = useState(50);
 
@@ -22,7 +22,7 @@ function CheckinPage({ onSubmit }) {
 
   return (
     <div className="checkin-page">
-      <Header />
+      <Header currentPage="checkin" onNavigate={onNavigate} />
       
       <main className="checkin-content">
         <div className="checkin-card">

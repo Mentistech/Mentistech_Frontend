@@ -39,3 +39,8 @@
 .nav-link:hover {
   color: #2d8a7b;
 }
+
+.nav-link.active {
+  color: #2d8a7b;
+  font-weight: 500;
+}
