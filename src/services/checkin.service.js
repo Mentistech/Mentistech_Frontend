@@ -28,9 +28,9 @@ export const HUMOR_TIPOS = {
 };
 
 export const HUMOR_LABELS = {
-  OTIMO:   "Ótimo 😄",
-  BOM:     "Bom 🙂",
-  NEUTRO:  "Neutro 😐",
-  RUIM:    "Ruim 😔",
-  PESSIMO: "Péssimo 😞",
+  MUITO_BEM: "Muito bem 😄",
+  BOM:       "Bom 🙂",
+  NEUTRO:    "Neutro 😐",
+  MAL:       "Mal 😔",
+  MUITO_MAL: "Muito mal 😞",
 };

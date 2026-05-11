@@ -1,36 +1,71 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../../components/Header/Header';
+import { getMe, atualizarPerfil, logout } from '../../services/auth.service';
 import './AccountPage.css';
 
-function AccountPage({ onNavigate }) {
+function AccountPage({ onNavigate, onLogout }) {
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [salvando, setSalvando] = useState(false);
+  const [erro, setErro] = useState('');
   const [userData, setUserData] = useState({
-    fullName: 'João Silva',
-    birthDate: '1990-05-15',
-    email: 'joao.silva@email.com',
-    phone: '(11) 98765-4321',
-    emergencyContact: 'Maria Silva',
-    emergencyPhone: '(11) 91234-5678',
-    gender: 'Masculino',
-    cpf: '123.456.789-00'
+    nome: '',
+    email: '',
+    departamento: '',
+    cargo: '',
   });
 
+  useEffect(() => {
+    getMe()
+      .then((res) => {
+        setUserData({
+          nome: res.nome || '',
+          email: res.email || '',
+          departamento: res.perfilColaborador?.departamento || '',
+          cargo: res.perfilColaborador?.cargo || '',
+        });
+      })
+      .catch(() => setErro('Erro ao carregar dados do perfil'))
+      .finally(() => setLoading(false));
+  }, []);
+
   const handleChange = (field, value) => {
-    setUserData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    setUserData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSave = () => {
-    setIsEditing(false);
-    // Aqui você pode adicionar lógica para salvar os dados
+  const handleSave = async () => {
+    setErro('');
+    setSalvando(true);
+    try {
+      await atualizarPerfil({
+        nome: userData.nome,
+        departamento: userData.departamento || undefined,
+        cargo: userData.cargo || undefined,
+      });
+      localStorage.setItem('nome', userData.nome);
+      setIsEditing(false);
+    } catch (err) {
+      setErro(err.message || 'Erro ao salvar perfil');
+    } finally {
+      setSalvando(false);
+    }
   };
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('pt-BR');
+  const handleLogout = () => {
+    logout();
+    onLogout();
   };
+
+  if (loading) {
+    return (
+      <div className="account-page">
+        <Header currentPage="account" onNavigate={onNavigate} />
+        <main className="account-content">
+          <p>Carregando...</p>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="account-page">
@@ -38,6 +73,10 @@ function AccountPage({ onNavigate }) {
 
       <main className="account-content">
         <h1 className="greeting">Minha Conta</h1>
+
+        {erro && (
+          <p style={{ color: '#c53030', fontSize: '14px', marginBottom: '16px' }}>{erro}</p>
+        )}
 
         <div className="account-card">
           <div className="card-header">
@@ -47,8 +86,8 @@ function AccountPage({ onNavigate }) {
                 Editar
               </button>
             ) : (
-              <button className="save-button" onClick={handleSave}>
-                Salvar
+              <button className="save-button" onClick={handleSave} disabled={salvando}>
+                {salvando ? 'Salvando...' : 'Salvar'}
               </button>
             )}
           </div>
@@ -59,120 +98,48 @@ function AccountPage({ onNavigate }) {
               {isEditing ? (
                 <input
                   type="text"
-                  value={userData.fullName}
-                  onChange={(e) => handleChange('fullName', e.target.value)}
+                  value={userData.nome}
+                  onChange={(e) => handleChange('nome', e.target.value)}
                 />
               ) : (
-                <p>{userData.fullName}</p>
-              )}
-            </div>
-
-            <div className="form-group">
-              <label>Data de nascimento</label>
-              {isEditing ? (
-                <input
-                  type="date"
-                  value={userData.birthDate}
-                  onChange={(e) => handleChange('birthDate', e.target.value)}
-                />
-              ) : (
-                <p>{formatDate(userData.birthDate)}</p>
-              )}
-            </div>
-
-            <div className="form-group">
-              <label>CPF</label>
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={userData.cpf}
-                  onChange={(e) => handleChange('cpf', e.target.value)}
-                />
-              ) : (
-                <p>{userData.cpf}</p>
-              )}
-            </div>
-
-            <div className="form-group">
-              <label>Gênero</label>
-              {isEditing ? (
-                <select
-                  value={userData.gender}
-                  onChange={(e) => handleChange('gender', e.target.value)}
-                >
-                  <option value="Masculino">Masculino</option>
-                  <option value="Feminino">Feminino</option>
-                  <option value="Outro">Outro</option>
-                  <option value="Prefiro não informar">Prefiro não informar</option>
-                </select>
-              ) : (
-                <p>{userData.gender}</p>
+                <p>{userData.nome}</p>
               )}
             </div>
 
             <div className="form-group">
               <label>E-mail</label>
-              {isEditing ? (
-                <input
-                  type="email"
-                  value={userData.email}
-                  onChange={(e) => handleChange('email', e.target.value)}
-                />
-              ) : (
-                <p>{userData.email}</p>
-              )}
+              <p>{userData.email}</p>
             </div>
 
             <div className="form-group">
-              <label>Telefone</label>
-              {isEditing ? (
-                <input
-                  type="tel"
-                  value={userData.phone}
-                  onChange={(e) => handleChange('phone', e.target.value)}
-                />
-              ) : (
-                <p>{userData.phone}</p>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="account-card">
-          <div className="card-header">
-            <h2>Contato de Emergência</h2>
-          </div>
-
-          <div className="form-grid">
-            <div className="form-group">
-              <label>Nome do contato</label>
+              <label>Departamento</label>
               {isEditing ? (
                 <input
                   type="text"
-                  value={userData.emergencyContact}
-                  onChange={(e) => handleChange('emergencyContact', e.target.value)}
+                  value={userData.departamento}
+                  onChange={(e) => handleChange('departamento', e.target.value)}
                 />
               ) : (
-                <p>{userData.emergencyContact}</p>
+                <p>{userData.departamento || '—'}</p>
               )}
             </div>
 
             <div className="form-group">
-              <label>Telefone de emergência</label>
+              <label>Cargo</label>
               {isEditing ? (
                 <input
-                  type="tel"
-                  value={userData.emergencyPhone}
-                  onChange={(e) => handleChange('emergencyPhone', e.target.value)}
+                  type="text"
+                  value={userData.cargo}
+                  onChange={(e) => handleChange('cargo', e.target.value)}
                 />
               ) : (
-                <p>{userData.emergencyPhone}</p>
+                <p>{userData.cargo || '—'}</p>
               )}
             </div>
           </div>
         </div>
 
-        <button className="logout-button">
+        <button className="logout-button" onClick={handleLogout}>
           Sair da conta
         </button>
       </main>

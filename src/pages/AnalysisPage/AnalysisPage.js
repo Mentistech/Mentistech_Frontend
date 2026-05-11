@@ -1,38 +1,50 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../../components/Header/Header';
+import { buscarAnaliseCheckin } from '../../services/checkin.service';
 import './AnalysisPage.css';
 
 function AnalysisPage({ data, onBack, onSchedule, onNavigate }) {
-  const analysisText = `
-    Com base no seu check-in de hoje, percebo que você está se sentindo em um nível moderado de bem-estar. 
-    O seu nível de estresse atual de ${data?.stressLevel || 50}% indica que você pode estar enfrentando 
-    alguns desafios no momento.
-    
-    É importante lembrar que sentir estresse é uma resposta natural do corpo. Recomendo que você 
-    tire alguns minutos para praticar exercícios de respiração profunda ou uma breve caminhada.
-    
-    Se você sentir que precisa de mais suporte, considere agendar uma consulta com um profissional 
-    de saúde mental. Estamos aqui para ajudar no seu caminho de bem-estar.
-  `;
+  const [analise, setAnalise] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const nome = localStorage.getItem('nome') || 'Usuário';
+
+  useEffect(() => {
+    if (!data?.checkinId) {
+      setLoading(false);
+      return;
+    }
+
+    buscarAnaliseCheckin(data.checkinId)
+      .then((res) => setAnalise(res))
+      .catch(() => setAnalise(null))
+      .finally(() => setLoading(false));
+  }, [data?.checkinId]);
+
+  const textoExibido = analise?.respostaIa || 'A análise de IA estará disponível em breve.';
 
   return (
     <div className="analysis-page">
       <Header currentPage="checkin" onNavigate={onNavigate} />
-      
+
       <main className="analysis-content">
         <div className="analysis-card">
-          <h1 className="greeting">Olá, João!</h1>
-          
+          <h1 className="greeting">Olá, {nome}!</h1>
+
           <h2 className="analysis-title">Análise de hoje pela IA</h2>
-          
+
           <div className="analysis-text">
-            <p>{analysisText}</p>
+            {loading ? (
+              <p>Carregando análise...</p>
+            ) : (
+              <p>{textoExibido}</p>
+            )}
           </div>
-          
+
           <button className="schedule-button" onClick={onSchedule}>
             Agendar consulta
           </button>
-          
+
           {onBack && (
             <button className="back-link" onClick={onBack}>
               Voltar ao check-in
