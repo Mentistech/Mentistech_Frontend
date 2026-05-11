@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders Mentistech check-in page', () => {
+test('renders Mentistech login page', () => {
+  localStorage.clear();
   render(<App />);
-
-  const greetingElement = screen.getByText(/Olá, João!/i);
-
-  expect(greetingElement).toBeInTheDocument();
+  const emailLabel = screen.getByText(/e-mail/i);
+  expect(emailLabel).toBeInTheDocument();
+  
 });
