@@ -1,47 +1,156 @@
-name: Frontend CI
+name: MentisTech Frontend CI
 
 on:
   push:
+
   pull_request:
 
 env:
-  NODE_VERSION: '22.11.0'
+  NODE_VERSION: '22.22.2'
 
 jobs:
-  frontend-ci:
+  dependencies:
+    name: Instalar dependências
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout do repositório
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
+          cache: 'npm'
 
-      - name: Show Node and npm versions
-        run: |
-          node -v
-          npm -v
-
-      - name: Install dependencies
+      - name: Instalar dependências (npm ci)
         run: npm ci
 
-      - name: Run ESLint
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+
+  lint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    needs: dependencies
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Restaurar cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Instalar dependências (fallback)
+        run: npm ci
+
+      - name: Executar ESLint
         run: npm run lint
 
-      - name: Run tests
+
+  test:
+    name: Testes
+    runs-on: ubuntu-latest
+    needs: lint
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Restaurar cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Instalar dependências (fallback)
+        run: npm ci
+
+      - name: Executar testes
         run: npm test -- --watchAll=false
 
-      - name: Build application
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Restaurar cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Instalar dependências (fallback)
+        run: npm ci
+
+      - name: Compilar aplicação
         run: npm run build
 
-      - name: Upload build artifact
+      - name: Publicar artefato de build
         uses: actions/upload-artifact@v4
         with:
           name: frontend-build
           path: build/
           retention-days: 3
-          
+
+
+  docs:
+    name: Documentação
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Publicar README como artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-documentation
+          path: README.md
+          retention-days: 30
+
+      - name: Exibir resumo no Job Summary
+        run: |
+          echo "## Frontend MentisTech" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Build, lint e testes executados com sucesso." >> $GITHUB_STEP_SUMMARY
