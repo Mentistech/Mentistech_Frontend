@@ -75,7 +75,13 @@ function LoginPage({ onLoginSuccess, onNavigateToRegister }) {
 
         <div className="login-footer">
           Não tem conta?{' '}
-          <a onClick={onNavigateToRegister}>Cadastre-se</a>
+          <button
+            type="button"
+            className="link-button"
+            onClick={onNavigateToRegister}
+          >
+            Cadastre-se
+          </button>
         </div>
       </div>
     </div>

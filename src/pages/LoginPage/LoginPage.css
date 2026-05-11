@@ -105,6 +105,25 @@
   color: #718096;
 }
 
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+
+  color: #2d8a7b;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.link-button:hover {
+  text-decoration: underline;
+}
+
 .login-footer a {
   color: #2d8a7b;
   text-decoration: none;
