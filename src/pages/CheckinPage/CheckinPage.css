@@ -99,6 +99,17 @@
   color: #718096;
 }
 
+.checkin-error {
+  background-color: #fff5f5;
+  color: #c53030;
+  border: 1px solid #fed7d7;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 13px;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
 .submit-button {
   width: 100%;
   padding: 14px 24px;

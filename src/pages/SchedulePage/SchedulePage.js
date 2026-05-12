@@ -1,24 +1,60 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../../components/Header/Header';
+import { listPsicologos, getPsicologoDisponibilidade, agendarConsulta } from '../../services/api';
 import './SchedulePage.css';
 
-function SchedulePage({ onBack, onNavigate }) {
+const JS_DAY_TO_ENUM = ['DOMINGO', 'SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO'];
+
+function gerarHorarios(horaInicio, horaFim) {
+  const slots = [];
+  let [h] = horaInicio.split(':').map(Number);
+  const [hFim] = horaFim.split(':').map(Number);
+  while (h < hFim) {
+    slots.push(`${String(h).padStart(2, '0')}:00`);
+    h++;
+  }
+  return slots;
+}
+
+function SchedulePage({ onBack, onNavigate, analiseId }) {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState('');
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
-  const horarios = [
-    '08:00',
-    '09:00',
-    '10:00',
-    '11:00',
-    '14:00',
-    '15:00',
-    '16:00',
-    '17:00',
-  ];
+  const [psicologos, setPsicologos] = useState([]);
+  const [selectedPsicologo, setSelectedPsicologo] = useState('');
+  const [disponibilidades, setDisponibilidades] = useState([]);
+  const [horariosDisponiveis, setHorariosDisponiveis] = useState([]);
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const diasSemana = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
+
+  useEffect(() => {
+    listPsicologos()
+      .then(setPsicologos)
+      .catch((err) => setError(err.message));
+  }, []);
+
+  useEffect(() => {
+    if (!selectedPsicologo) { setDisponibilidades([]); return; }
+    getPsicologoDisponibilidade(selectedPsicologo)
+      .then(setDisponibilidades)
+      .catch((err) => setError(err.message));
+  }, [selectedPsicologo]);
+
+  useEffect(() => {
+    if (!selectedDate || !selectedPsicologo) { setHorariosDisponiveis([]); setSelectedTime(''); return; }
+    const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), selectedDate);
+    const diaSemana = JS_DAY_TO_ENUM[date.getDay()];
+    const slots = disponibilidades
+      .filter((d) => d.diaSemana === diaSemana)
+      .flatMap((d) => gerarHorarios(d.horaInicio, d.horaFim));
+    setHorariosDisponiveis(slots);
+    setSelectedTime('');
+  }, [selectedDate, disponibilidades, currentMonth, selectedPsicologo]);
 
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();
@@ -72,9 +108,25 @@ function SchedulePage({ onBack, onNavigate }) {
     }
   };
 
-  const handleSchedule = () => {
-    if (selectedDate && selectedTime) {
-      alert(`Consulta agendada para o dia ${selectedDate} de ${formatMonth(currentMonth)} às ${selectedTime}`);
+  const handleSchedule = async () => {
+    if (!selectedDate || !selectedTime || !selectedPsicologo) return;
+    setError('');
+    setSuccess('');
+    setLoading(true);
+    try {
+      const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), selectedDate);
+      const [hh, mm] = selectedTime.split(':');
+      date.setHours(Number(hh), Number(mm), 0, 0);
+      const payload = { psicologoId: selectedPsicologo, dataHora: date.toISOString() };
+      if (analiseId) payload.analiseId = analiseId;
+      await agendarConsulta(payload);
+      setSuccess(`Consulta agendada para ${selectedDate} de ${formatMonth(currentMonth)} às ${selectedTime}!`);
+      setSelectedDate(null);
+      setSelectedTime('');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -83,10 +135,25 @@ function SchedulePage({ onBack, onNavigate }) {
   return (
     <div className="schedule-page">
       <Header currentPage="checkin" onNavigate={onNavigate} />
-      
-      <main className="schedule-content">
 
+      <main className="schedule-content">
         <div className="schedule-container">
+
+          <div className="psicologo-select-wrapper">
+            <select
+              className="time-select"
+              value={selectedPsicologo}
+              onChange={(e) => setSelectedPsicologo(e.target.value)}
+            >
+              <option value="">Selecionar psicólogo</option>
+              {psicologos.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.usuario?.nome || p.id}{p.especialidade ? ` — ${p.especialidade}` : ''}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <div className="calendar">
             <div className="calendar-header">
               <button className="nav-btn" onClick={prevMonth}>&lt;</button>
@@ -115,24 +182,32 @@ function SchedulePage({ onBack, onNavigate }) {
           </div>
 
           <div className="time-select-wrapper">
-            <select 
+            <select
               className="time-select"
               value={selectedTime}
               onChange={(e) => setSelectedTime(e.target.value)}
+              disabled={horariosDisponiveis.length === 0}
             >
-              <option value="">Selecionar horário</option>
-              {horarios.map((horario) => (
+              <option value="">
+                {selectedDate && selectedPsicologo && horariosDisponiveis.length === 0
+                  ? 'Sem horários disponíveis'
+                  : 'Selecionar horário'}
+              </option>
+              {horariosDisponiveis.map((horario) => (
                 <option key={horario} value={horario}>{horario}</option>
               ))}
             </select>
           </div>
 
-          <button 
+          {error && <p className="schedule-error">{error}</p>}
+          {success && <p className="schedule-success">{success}</p>}
+
+          <button
             className="schedule-btn"
             onClick={handleSchedule}
-            disabled={!selectedDate || !selectedTime}
+            disabled={!selectedDate || !selectedTime || !selectedPsicologo || loading}
           >
-            Agendar consulta
+            {loading ? 'Agendando...' : 'Agendar consulta'}
           </button>
         </div>
 

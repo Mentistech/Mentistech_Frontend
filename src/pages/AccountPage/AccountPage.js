@@ -1,34 +1,70 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../../components/Header/Header';
+import { getMe, updateMe, getPerfilLocal, savePerfilLocal } from '../../services/api';
 import './AccountPage.css';
 
-function AccountPage({ onNavigate }) {
+function AccountPage({ onNavigate, onLogout }) {
   const [isEditing, setIsEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [userId, setUserId] = useState(null);
   const [userData, setUserData] = useState({
-    fullName: 'João Silva',
-    birthDate: '1990-05-15',
-    email: 'joao.silva@email.com',
-    phone: '(11) 98765-4321',
-    emergencyContact: 'Maria Silva',
-    emergencyPhone: '(11) 91234-5678',
-    gender: 'Masculino',
-    cpf: '123.456.789-00'
+    fullName: '',
+    email: '',
+    birthDate: '',
+    phone: '',
+    emergencyContact: '',
+    emergencyPhone: '',
+    gender: '',
+    cpf: '',
   });
 
+  useEffect(() => {
+    getMe()
+      .then((data) => {
+        setUserId(data.id);
+        const local = getPerfilLocal(data.id);
+        setUserData((prev) => ({
+          ...prev,
+          fullName: data.nome || '',
+          email: data.email || '',
+          birthDate: local.dataNascimento || '',
+          gender: local.genero || '',
+          cpf: local.cpf || '',
+          phone: local.telefone || '',
+        }));
+      })
+      .catch((err) => setError(err.message));
+  }, []);
+
   const handleChange = (field, value) => {
-    setUserData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    setUserData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSave = () => {
-    setIsEditing(false);
-    // Aqui você pode adicionar lógica para salvar os dados
+  const handleSave = async () => {
+    setError('');
+    setSaving(true);
+    try {
+      await updateMe({ nome: userData.fullName });
+      if (userId) {
+        savePerfilLocal(userId, {
+          dataNascimento: userData.birthDate,
+          genero: userData.gender,
+          cpf: userData.cpf,
+          telefone: userData.phone,
+        });
+      }
+      setIsEditing(false);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
+    if (!dateString) return '—';
+    const date = new Date(dateString + 'T00:00:00');
     return date.toLocaleDateString('pt-BR');
   };
 
@@ -47,11 +83,13 @@ function AccountPage({ onNavigate }) {
                 Editar
               </button>
             ) : (
-              <button className="save-button" onClick={handleSave}>
-                Salvar
+              <button className="save-button" onClick={handleSave} disabled={saving}>
+                {saving ? 'Salvando...' : 'Salvar'}
               </button>
             )}
           </div>
+
+          {error && <p className="account-error">{error}</p>}
 
           <div className="form-grid">
             <div className="form-group">
@@ -172,7 +210,7 @@ function AccountPage({ onNavigate }) {
           </div>
         </div>
 
-        <button className="logout-button">
+        <button className="logout-button" onClick={onLogout}>
           Sair da conta
         </button>
       </main>

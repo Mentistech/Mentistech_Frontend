@@ -9,6 +9,16 @@
   padding: 40px 20px;
 }
 
+.account-error {
+  background-color: #fff5f5;
+  color: #c53030;
+  border: 1px solid #fed7d7;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
 .account-content .greeting {
   font-size: 24px;
   color: #2d3748;

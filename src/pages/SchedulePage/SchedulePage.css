@@ -171,3 +171,43 @@
 .back-link:hover {
   color: #3a8a7c;
 }
+
+.psicologo-select-wrapper {
+  width: 280px;
+}
+
+.schedule-error {
+  width: 280px;
+  background-color: #fff5f5;
+  color: #c53030;
+  border: 1px solid #fed7d7;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 13px;
+}
+
+.schedule-success {
+  width: 280px;
+  background-color: #f0fff4;
+  color: #276749;
+  border: 1px solid #9ae6b4;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 13px;
+}
+
+/* Back Link */
+.back-link {
+  display: block;
+  margin-top: 40px;
+  background: none;
+  border: none;
+  color: #4a9a8c;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.back-link:hover {
+  color: #3a8a7c;
+}
