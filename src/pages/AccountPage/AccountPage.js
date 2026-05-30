@@ -1,31 +1,41 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../../components/Header/Header';
-import { getMe, atualizarPerfil, logout } from '../../services/auth.service';
+import { getMe, updateMe, getPerfilLocal, savePerfilLocal } from '../../services/api';
 import './AccountPage.css';
 
 function AccountPage({ onNavigate, onLogout }) {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [salvando, setSalvando] = useState(false);
-  const [erro, setErro] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [userId, setUserId] = useState(null);
+  const papel = localStorage.getItem('papel');
   const [userData, setUserData] = useState({
-    nome: '',
-    email: '',
-    departamento: '',
-    cargo: '',
+    nome: '', email: '',
+    departamento: '', cargo: '',
+    crp: '', especialidade: '',
+    birthDate: '', phone: '', gender: '', cpf: '',
   });
 
   useEffect(() => {
     getMe()
-      .then((res) => {
+      .then((data) => {
+        setUserId(data.id);
+        const local = getPerfilLocal(data.id);
         setUserData({
-          nome: res.nome || '',
-          email: res.email || '',
-          departamento: res.perfilColaborador?.departamento || '',
-          cargo: res.perfilColaborador?.cargo || '',
+          nome: data.nome || '',
+          email: data.email || '',
+          departamento: data.perfilColaborador?.departamento || '',
+          cargo: data.perfilColaborador?.cargo || '',
+          crp: data.perfilPsicologo?.crp || '',
+          especialidade: data.perfilPsicologo?.especialidade || '',
+          birthDate: local.dataNascimento || '',
+          phone: local.telefone || '',
+          gender: local.genero || '',
+          cpf: local.cpf || '',
         });
       })
-      .catch(() => setErro('Erro ao carregar dados do perfil'))
+      .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
 
@@ -34,26 +44,34 @@ function AccountPage({ onNavigate, onLogout }) {
   };
 
   const handleSave = async () => {
-    setErro('');
-    setSalvando(true);
+    setError('');
+    setSaving(true);
     try {
-      await atualizarPerfil({
-        nome: userData.nome,
-        departamento: userData.departamento || undefined,
-        cargo: userData.cargo || undefined,
-      });
+      const payload = { nome: userData.nome };
+      if (papel === 'COLABORADOR') {
+        payload.departamento = userData.departamento || undefined;
+        payload.cargo = userData.cargo || undefined;
+      }
+      if (papel === 'PSICOLOGO') {
+        payload.crp = userData.crp || undefined;
+        payload.especialidade = userData.especialidade || undefined;
+      }
+      await updateMe(payload);
+      if (userId) {
+        savePerfilLocal(userId, {
+          dataNascimento: userData.birthDate,
+          genero: userData.gender,
+          cpf: userData.cpf,
+          telefone: userData.phone,
+        });
+      }
       localStorage.setItem('nome', userData.nome);
       setIsEditing(false);
     } catch (err) {
-      setErro(err.message || 'Erro ao salvar perfil');
+      setError(err.message);
     } finally {
-      setSalvando(false);
+      setSaving(false);
     }
-  };
-
-  const handleLogout = () => {
-    logout();
-    onLogout();
   };
 
   if (loading) {
@@ -74,10 +92,6 @@ function AccountPage({ onNavigate, onLogout }) {
       <main className="account-content">
         <h1 className="greeting">Minha Conta</h1>
 
-        {erro && (
-          <p style={{ color: '#c53030', fontSize: '14px', marginBottom: '16px' }}>{erro}</p>
-        )}
-
         <div className="account-card">
           <div className="card-header">
             <h2>Dados Pessoais</h2>
@@ -86,21 +100,20 @@ function AccountPage({ onNavigate, onLogout }) {
                 Editar
               </button>
             ) : (
-              <button className="save-button" onClick={handleSave} disabled={salvando}>
-                {salvando ? 'Salvando...' : 'Salvar'}
+              <button className="save-button" onClick={handleSave} disabled={saving}>
+                {saving ? 'Salvando...' : 'Salvar'}
               </button>
             )}
           </div>
+
+          {error && <p className="account-error">{error}</p>}
 
           <div className="form-grid">
             <div className="form-group">
               <label>Nome completo</label>
               {isEditing ? (
-                <input
-                  type="text"
-                  value={userData.nome}
-                  onChange={(e) => handleChange('nome', e.target.value)}
-                />
+                <input type="text" value={userData.nome}
+                  onChange={(e) => handleChange('nome', e.target.value)} />
               ) : (
                 <p>{userData.nome}</p>
               )}
@@ -111,35 +124,57 @@ function AccountPage({ onNavigate, onLogout }) {
               <p>{userData.email}</p>
             </div>
 
-            <div className="form-group">
-              <label>Departamento</label>
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={userData.departamento}
-                  onChange={(e) => handleChange('departamento', e.target.value)}
-                />
-              ) : (
-                <p>{userData.departamento || '—'}</p>
-              )}
-            </div>
+            {papel === 'COLABORADOR' && (
+              <>
+                <div className="form-group">
+                  <label>Departamento</label>
+                  {isEditing ? (
+                    <input type="text" value={userData.departamento}
+                      onChange={(e) => handleChange('departamento', e.target.value)} />
+                  ) : (
+                    <p>{userData.departamento || '—'}</p>
+                  )}
+                </div>
 
-            <div className="form-group">
-              <label>Cargo</label>
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={userData.cargo}
-                  onChange={(e) => handleChange('cargo', e.target.value)}
-                />
-              ) : (
-                <p>{userData.cargo || '—'}</p>
-              )}
-            </div>
+                <div className="form-group">
+                  <label>Cargo</label>
+                  {isEditing ? (
+                    <input type="text" value={userData.cargo}
+                      onChange={(e) => handleChange('cargo', e.target.value)} />
+                  ) : (
+                    <p>{userData.cargo || '—'}</p>
+                  )}
+                </div>
+              </>
+            )}
+
+            {papel === 'PSICOLOGO' && (
+              <>
+                <div className="form-group">
+                  <label>CRP</label>
+                  {isEditing ? (
+                    <input type="text" value={userData.crp}
+                      onChange={(e) => handleChange('crp', e.target.value)} />
+                  ) : (
+                    <p>{userData.crp || '—'}</p>
+                  )}
+                </div>
+
+                <div className="form-group">
+                  <label>Especialidade</label>
+                  {isEditing ? (
+                    <input type="text" value={userData.especialidade}
+                      onChange={(e) => handleChange('especialidade', e.target.value)} />
+                  ) : (
+                    <p>{userData.especialidade || '—'}</p>
+                  )}
+                </div>
+              </>
+            )}
           </div>
         </div>
 
-        <button className="logout-button" onClick={handleLogout}>
+        <button className="logout-button" onClick={onLogout}>
           Sair da conta
         </button>
       </main>

@@ -43,6 +43,20 @@
   white-space: pre-line;
 }
 
+.analysis-loading {
+  color: #718096;
+  font-style: italic;
+}
+
+.analysis-error {
+  background-color: #fff5f5;
+  color: #c53030;
+  border: 1px solid #fed7d7;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 13px;
+}
+
 .schedule-button {
   width: 100%;
   padding: 14px 24px;
