@@ -2,6 +2,16 @@
   text-align: center;
 }
 
+.app-loading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f9f9;
+  color: #718096;
+  font-size: 16px;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;

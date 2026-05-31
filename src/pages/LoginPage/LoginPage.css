@@ -1,0 +1,172 @@
+.login-page {
+  min-height: 100vh;
+  background-color: #f5f9f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.login-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.login-logo {
+  font-size: 26px;
+  font-weight: 700;
+  color: #2d8a7b;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.login-subtitle {
+  font-size: 13px;
+  color: #718096;
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.login-tabs {
+  display: flex;
+  border-bottom: 1px solid #e0e7e9;
+  margin-bottom: 24px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 10px;
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: #718096;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.2s;
+}
+
+.tab-btn.active {
+  color: #2d8a7b;
+  border-bottom-color: #2d8a7b;
+  font-weight: 600;
+}
+
+.login-error {
+  background-color: #fff5f5;
+  color: #c53030;
+  border: 1px solid #fed7d7;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.login-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.login-form label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #4a5568;
+}
+
+.login-form input,
+.login-form select {
+  padding: 10px 12px;
+  border: 1px solid #d1e0de;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #2d3748;
+  background-color: #f9fdfb;
+  transition: border-color 0.2s;
+}
+
+.login-form input:focus,
+.login-form select:focus {
+  outline: none;
+  border-color: #2d8a7b;
+  background-color: #fff;
+}
+
+.submit-btn {
+  padding: 12px;
+  background-color: #2d8a7b;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 4px;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background-color: #236d62;
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Validações em tempo real */
+.login-form input.input-error {
+  border-color: #e53e3e;
+  background-color: #fff5f5;
+}
+
+.field-error {
+  font-size: 12px;
+  color: #c53030;
+  margin-top: 2px;
+}
+
+.idade-label {
+  font-weight: 400;
+  color: #2d8a7b;
+  font-size: 12px;
+}
+
+/* Barra de força da senha */
+.senha-forca {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.forca-barras {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+
+.forca-barra {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  transition: background-color 0.3s;
+}
+
+.forca-label {
+  font-size: 12px;
+  font-weight: 500;
+  min-width: 64px;
+  text-align: right;
+  transition: color 0.3s;
+}
