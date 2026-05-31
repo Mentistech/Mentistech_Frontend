@@ -1,0 +1,164 @@
+.consultations-page {
+  min-height: 100vh;
+  background-color: #f8fafa;
+}
+
+.consultations-content {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: #333;
+  margin-bottom: 32px;
+}
+
+.loading {
+  text-align: center;
+  color: #666;
+  padding: 40px 0;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.empty-state p {
+  color: #666;
+  margin-bottom: 24px;
+}
+
+.empty-state .schedule-btn {
+  padding: 12px 24px;
+  font-size: 1rem;
+  background: #fff;
+  color: #333;
+  border: 1px solid #333;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.empty-state .schedule-btn:hover {
+  background: #333;
+  color: #fff;
+}
+
+.success-message {
+  background-color: #f0fff4;
+  color: #276749;
+  border: 1px solid #9ae6b4;
+  border-radius: 6px;
+  padding: 12px 16px;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.error-message {
+  background-color: #fff5f5;
+  color: #c53030;
+  border: 1px solid #fed7d7;
+  border-radius: 6px;
+  padding: 12px 16px;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.consultas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.consulta-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.consulta-header {
+  margin-bottom: 16px;
+}
+
+.consulta-status {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.status-agendada {
+  background-color: #e6f7ff;
+  color: #0070a8;
+}
+
+.status-realizada {
+  background-color: #f0fff4;
+  color: #276749;
+}
+
+.status-cancelada {
+  background-color: #fff5f5;
+  color: #c53030;
+}
+
+.consulta-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.info-label {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.info-value {
+  color: #333;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.consulta-actions {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.cancel-btn {
+  width: 100%;
+  padding: 10px 16px;
+  font-size: 0.9rem;
+  background: #fff;
+  color: #c53030;
+  border: 1px solid #c53030;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancel-btn:hover:not(:disabled) {
+  background: #c53030;
+  color: #fff;
+}
+
+.cancel-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
