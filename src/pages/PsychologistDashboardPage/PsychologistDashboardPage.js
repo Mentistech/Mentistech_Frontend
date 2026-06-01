@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PsychologistHeader from '../../components/PsychologistHeader/PsychologistHeader';
+import { listarMinhasConsultas, STATUS_CONSULTA } from '../../services/consulta.service';
 import './PsychologistDashboardPage.css';
 
 function PsychologistDashboardPage({ onNavigate, userName }) {
