@@ -39,6 +39,7 @@ function App() {
 
   const handleLogin = (userData) => {
     setUser(userData);
+    localStorage.setItem('papel', userData.papel);
     // Define pagina inicial baseada no papel
     if (userData.papel === 'PSICOLOGO') {
       setCurrentPage('dashboard');
@@ -49,6 +50,7 @@ function App() {
 
   const handleLogout = () => {
     removeToken();
+    localStorage.removeItem('papel');
     setUser(null);
     setCheckinData(null);
     setCurrentPage(null);

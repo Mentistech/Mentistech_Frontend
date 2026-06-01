@@ -29,6 +29,8 @@ async function request(path, options = {}) {
   return body;
 }
 
+export const apiFetch = (path, options = {}) => request(path, options);
+
 // Auth
 export const login = (email, senha) =>
   request('/auth/login', { method: 'POST', body: JSON.stringify({ email, senha }) });

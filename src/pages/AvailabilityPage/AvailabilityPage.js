@@ -41,8 +41,9 @@ function AvailabilityPage({ onNavigate }) {
       setLoading(true);
       setError('');
       const user = await getMe();
-      setUserId(user.id);
-      const data = await buscarDisponibilidade(user.id);
+      const psicologoId = user.perfilPsicologo?.id;
+      setUserId(psicologoId);
+      const data = await buscarDisponibilidade(psicologoId);
       setDisponibilidades(data);
     } catch (err) {
       setError('Erro ao carregar disponibilidade.');

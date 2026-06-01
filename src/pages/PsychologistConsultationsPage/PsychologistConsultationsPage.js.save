@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import PsychologistHeader from '../../components/PsychologistHeader/PsychologistHeader';
-import { 
+import 
+
+
+
+
+
   listarMinhasConsultas, 
   atualizarStatusConsulta, 
   cancelarConsulta,
@@ -58,7 +63,7 @@ function PsychologistConsultationsPage({ onNavigate }) {
     try {
       setAtualizando(id);
       setError('');
-      await atualizarStatusConsulta(id, STATUS_CONSULTA.CANCELADA);
+      await cancelarConsulta(id, STATUS_CONSULTA.CANCELADA);
       setSuccessMessage('Consulta cancelada com sucesso.');
       setTimeout(() => setSuccessMessage(''), 3000);
       carregarConsultas();

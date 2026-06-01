@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../../components/Header/Header';
+import PsychologistHeader from '../../components/PsychologistHeader/PsychologistHeader';
 import { getMe, updateMe, getPerfilLocal, savePerfilLocal } from '../../services/api';
 import './AccountPage.css';
 
@@ -77,7 +78,11 @@ function AccountPage({ onNavigate, onLogout }) {
   if (loading) {
     return (
       <div className="account-page">
-        <Header currentPage="account" onNavigate={onNavigate} />
+        {papel === 'PSICOLOGO' ? (
+          <PsychologistHeader currentPage="account" onNavigate={onNavigate} />
+        ) : (
+          <Header currentPage="account" onNavigate={onNavigate} />
+        )}
         <main className="account-content">
           <p>Carregando...</p>
         </main>
@@ -87,11 +92,13 @@ function AccountPage({ onNavigate, onLogout }) {
 
   return (
     <div className="account-page">
-      <Header currentPage="account" onNavigate={onNavigate} />
-
+      {papel === 'PSICOLOGO' ? (
+        <PsychologistHeader currentPage="account" onNavigate={onNavigate} />
+      ) : (
+        <Header currentPage="account" onNavigate={onNavigate} />
+      )}
       <main className="account-content">
         <h1 className="greeting">Minha Conta</h1>
-
         <div className="account-card">
           <div className="card-header">
             <h2>Dados Pessoais</h2>
@@ -105,9 +112,7 @@ function AccountPage({ onNavigate, onLogout }) {
               </button>
             )}
           </div>
-
           {error && <p className="account-error">{error}</p>}
-
           <div className="form-grid">
             <div className="form-group">
               <label>Nome completo</label>
@@ -118,12 +123,10 @@ function AccountPage({ onNavigate, onLogout }) {
                 <p>{userData.nome}</p>
               )}
             </div>
-
             <div className="form-group">
               <label>E-mail</label>
               <p>{userData.email}</p>
             </div>
-
             {papel === 'COLABORADOR' && (
               <>
                 <div className="form-group">
@@ -135,7 +138,6 @@ function AccountPage({ onNavigate, onLogout }) {
                     <p>{userData.departamento || '—'}</p>
                   )}
                 </div>
-
                 <div className="form-group">
                   <label>Cargo</label>
                   {isEditing ? (
@@ -147,7 +149,6 @@ function AccountPage({ onNavigate, onLogout }) {
                 </div>
               </>
             )}
-
             {papel === 'PSICOLOGO' && (
               <>
                 <div className="form-group">
@@ -159,7 +160,6 @@ function AccountPage({ onNavigate, onLogout }) {
                     <p>{userData.crp || '—'}</p>
                   )}
                 </div>
-
                 <div className="form-group">
                   <label>Especialidade</label>
                   {isEditing ? (
@@ -173,7 +173,6 @@ function AccountPage({ onNavigate, onLogout }) {
             )}
           </div>
         </div>
-
         <button className="logout-button" onClick={onLogout}>
           Sair da conta
         </button>
