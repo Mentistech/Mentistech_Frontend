@@ -23,7 +23,6 @@ function AvailabilityPage({ onNavigate }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [userId, setUserId] = useState(null);
   
   const [showForm, setShowForm] = useState(false);
   const [diaSemana, setDiaSemana] = useState('');
@@ -42,7 +41,6 @@ function AvailabilityPage({ onNavigate }) {
       setError('');
       const user = await getMe();
       const psicologoId = user.perfilPsicologo?.id;
-      setUserId(psicologoId);
       const data = await buscarDisponibilidade(psicologoId);
       setDisponibilidades(data);
     } catch (err) {
