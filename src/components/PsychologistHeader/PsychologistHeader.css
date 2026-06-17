@@ -1,0 +1,68 @@
+.psy-header {
+  background-color: #fff;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 16px 24px;
+}
+
+.psy-header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.psy-header-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.psy-header-logo .logo-text {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.logo-badge {
+  background-color: #2d8a7b;
+  color: #fff;
+  font-size: 0.7rem;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.psy-header-nav {
+  display: flex;
+  gap: 32px;
+}
+
+.psy-header-nav .nav-link {
+  color: #4a5568;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+
+.psy-header-nav .nav-link:hover {
+  color: #2d8a7b;
+}
+
+.psy-header-nav .nav-link.active {
+  color: #2d8a7b;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .psy-header-container {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .psy-header-nav {
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}

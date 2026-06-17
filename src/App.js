@@ -1,23 +1,35 @@
-
 import React, { useState, useEffect } from 'react';
 import LoginPage from './pages/LoginPage/LoginPage';
 import CheckinPage from './pages/CheckinPage/CheckinPage';
 import AnalysisPage from './pages/AnalysisPage/AnalysisPage';
 import SchedulePage from './pages/SchedulePage/SchedulePage';
 import AccountPage from './pages/AccountPage/AccountPage';
+import ConsultationsPage from './pages/ConsultationsPage/ConsultationsPage';
+import CheckinHistoryPage from './pages/CheckinHistoryPage/CheckinHistoryPage';
+import PsychologistDashboardPage from './pages/PsychologistDashboardPage/PsychologistDashboardPage';
+import PsychologistConsultationsPage from './pages/PsychologistConsultationsPage/PsychologistConsultationsPage';
+import AvailabilityPage from './pages/AvailabilityPage/AvailabilityPage';
 import { getMe, removeToken, getToken } from './services/api';
 import './App.css';
 
 function App() {
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState('checkin');
+  const [currentPage, setCurrentPage] = useState(null);
   const [checkinData, setCheckinData] = useState(null);
 
   useEffect(() => {
     if (getToken()) {
       getMe()
-        .then((data) => setUser({ nome: data.nome, papel: data.papel, usuarioId: data.id }))
+        .then((data) => {
+          setUser({ nome: data.nome, papel: data.papel, usuarioId: data.id });
+          // Define pagina inicial baseada no papel
+          if (data.papel === 'PSICOLOGO') {
+            setCurrentPage('dashboard');
+          } else {
+            setCurrentPage('checkin');
+          }
+        })
         .catch(() => removeToken())
         .finally(() => setAuthLoading(false));
     } else {
@@ -27,14 +39,21 @@ function App() {
 
   const handleLogin = (userData) => {
     setUser(userData);
-    setCurrentPage('checkin');
+    localStorage.setItem('papel', userData.papel);
+    // Define pagina inicial baseada no papel
+    if (userData.papel === 'PSICOLOGO') {
+      setCurrentPage('dashboard');
+    } else {
+      setCurrentPage('checkin');
+    }
   };
 
   const handleLogout = () => {
     removeToken();
+    localStorage.removeItem('papel');
     setUser(null);
     setCheckinData(null);
-    setCurrentPage('checkin');
+    setCurrentPage(null);
   };
 
   const handleCheckinSubmit = (data) => {
@@ -66,6 +85,37 @@ function App() {
     );
   }
 
+  // Rotas do Psicologo
+  if (user.papel === 'PSICOLOGO') {
+    return (
+      <div className="App">
+        {currentPage === 'dashboard' && (
+          <PsychologistDashboardPage
+            onNavigate={handleNavigate}
+            userName={user.nome}
+          />
+        )}
+        {currentPage === 'psy-consultations' && (
+          <PsychologistConsultationsPage
+            onNavigate={handleNavigate}
+          />
+        )}
+        {currentPage === 'availability' && (
+          <AvailabilityPage
+            onNavigate={handleNavigate}
+          />
+        )}
+        {currentPage === 'account' && (
+          <AccountPage
+            onNavigate={handleNavigate}
+            onLogout={handleLogout}
+          />
+        )}
+      </div>
+    );
+  }
+
+  // Rotas do Colaborador (Paciente)
   return (
     <div className="App">
       {currentPage === 'checkin' && (
@@ -95,6 +145,16 @@ function App() {
         <AccountPage
           onNavigate={handleNavigate}
           onLogout={handleLogout}
+        />
+      )}
+      {currentPage === 'consultations' && (
+        <ConsultationsPage
+          onNavigate={handleNavigate}
+        />
+      )}
+      {currentPage === 'history' && (
+        <CheckinHistoryPage
+          onNavigate={handleNavigate}
         />
       )}
     </div>

@@ -22,14 +22,14 @@ function Header({ currentPage, onNavigate }) {
             className={`nav-link ${currentPage === 'checkin' ? 'active' : ''}`}
             onClick={(e) => handleNavClick(e, 'checkin')}
           >
-            Início
+            Inicio
           </a>
           <a 
-            href="/conta" 
-            className={`nav-link ${currentPage === 'account' ? 'active' : ''}`}
-            onClick={(e) => handleNavClick(e, 'account')}
+            href="/historico" 
+            className={`nav-link ${currentPage === 'history' ? 'active' : ''}`}
+            onClick={(e) => handleNavClick(e, 'history')}
           >
-            Minha conta
+            Historico
           </a>
           <a 
             href="/consultas" 
@@ -37,6 +37,13 @@ function Header({ currentPage, onNavigate }) {
             onClick={(e) => handleNavClick(e, 'consultations')}
           >
             Minhas consultas
+          </a>
+          <a 
+            href="/conta" 
+            className={`nav-link ${currentPage === 'account' ? 'active' : ''}`}
+            onClick={(e) => handleNavClick(e, 'account')}
+          >
+            Minha conta
           </a>
         </nav>
       </div>
